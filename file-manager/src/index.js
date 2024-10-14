@@ -1,10 +1,11 @@
-import { exit } from 'node:process';
-import { CTRL_C_TERMINATE, CURRENT_DIR_MSG } from './utils/constants.js';
+import { exit, chdir } from 'node:process';
+import { CTRL_C_TERMINATE, INVALID_DIRECTORY } from './utils/constants.js';
 import { getHomeDir } from './utils/osInfo.js';
-import { getCLIUsername, readline } from './utils/cli.js';
-import { logger } from './utils/utils.js';
+import { getCLIUsername } from './utils/cli.js';
+import { isValidDirectory, logger } from './utils/utils.js';
 import handleCommands from './commands/commandHandler.js';
-import { handleExit } from './utils/exit.js';
+import handleExit from './utils/handleExit.js';
+import { readline, updatePrompt } from './utils/readline.js';
 
 /**
  * File Manager application
@@ -24,20 +25,25 @@ import { handleExit } from './utils/exit.js';
  * Any errors during the startup are logged, and the process exits with a non-zero status code.
  *
  * @async
- * @function fileManagerStart
+ * @function fileManager
  * @throws Will log an error and exit with status code 1 if there's a failure during initialization.
  */
-const fileManagerStart = async () => {
+const fileManager = async () => {
   try {
     // get username from CLI argument passed on app start
     const username = getCLIUsername();
     const userHomeDir = await getHomeDir();
 
-    const welcomeMsg = `Welcome to the File Manager, ${username}!`;
+    // Set the working directory to the user's home directory
+        if (isValidDirectory(userHomeDir)) {
+            chdir(userHomeDir);
+          } else {
+            logger(INVALID_DIRECTORY);
+            chdir(userHomeDir);
+          }
 
-    logger(welcomeMsg);
-    logger(CURRENT_DIR_MSG + userHomeDir);
-    readline.prompt();
+    logger(`Welcome to the File Manager, ${username}!`);
+    updatePrompt();
 
     readline.on(CTRL_C_TERMINATE, () => {
       handleExit(username);
@@ -56,7 +62,7 @@ const fileManagerStart = async () => {
         readline.pause();
         await handleCommands(trimmedInput);
         readline.resume();
-        readline.prompt();
+        updatePrompt();
       }
     });
   } catch (error) {
@@ -65,4 +71,4 @@ const fileManagerStart = async () => {
   }
 };
 
-fileManagerStart();
+fileManager();

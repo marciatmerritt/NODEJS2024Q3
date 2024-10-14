@@ -15,6 +15,7 @@ export const HOME_DIR = 'Home Directory: ';
 
 // Error messages
 export const INVALID_COMMAND = `Invalid Command`;
+export const INVALID_DIRECTORY = 'Invalid directory change attempt. Reverting to home directory.';
 export const INVALID_INPUT = `Invalid input`;
 export const OPERATION_FAILED = `Operation failed`;
 export const HASH_ERROR = 'Error while calculating hash';

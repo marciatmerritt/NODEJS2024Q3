@@ -3,6 +3,7 @@ import handleHashCommands from './hash.js';
 import { handleCompressCommand, handleDecompressCommand } from './zip.js';
 import { logger } from '../utils/utils.js';
 import { INVALID_COMMAND } from '../utils/constants.js';
+import { handleCdCommand, handleLsCommand, handleUpCommand } from './navigation.js';
 
 /**
  * This asynchronous function takes a user input string, splits it into the command and its arguments,
@@ -39,6 +40,19 @@ const handleCommands = async (input) => {
       case 'decompress':
         await handleDecompressCommand(args);
         break;
+      case 'up':
+        await handleUpCommand();
+        break;
+      case 'ls':
+        await handleLsCommand();
+        break;
+        case 'cd':
+            if (args.length > 0) {
+              await handleCdCommand(args.join(' '));
+            } else {
+              logger('Please specify a directory to change to.');
+            }
+            break;
       default:
         logger(INVALID_COMMAND);
     }

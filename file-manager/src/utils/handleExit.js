@@ -1,4 +1,4 @@
-import { readline } from './cli.js';
+import { readline } from './readline.js';
 import { logger } from './utils.js';
 
 /**
@@ -10,8 +10,10 @@ import { logger } from './utils.js';
  *
  * @param {string} username - The username to include in the farewell message.
  */
-export const handleExit = (username) => {
+const handleExit = (username) => {
   const exitMsg = `\nThank you for using File Manager, ${username}, goodbye!`;
   logger(exitMsg);
   readline.close();
 };
+
+export default handleExit;

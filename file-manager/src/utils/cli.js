@@ -1,5 +1,4 @@
-import { stdin, stdout, argv } from 'process';
-import { createInterface } from 'readline';
+import { argv } from 'process';
 
 /**
  * This function searches for a command-line argument in the form of '--username=<username>'
@@ -14,17 +13,3 @@ export const getCLIUsername = () => {
   const username = usernameArg ? usernameArg.split('=')[1] : 'Guest';
   return username;
 };
-
-/**
- * The readline interface is set up to use the standard input and output streams (`stdin` and `stdout`).
- * A prompt message, 'Enter Command: ', is displayed when the interface is waiting for the user to input a command.
- *
- * @constant {Interface} readline
- * @see {@link https://nodejs.org/api/readline.html#readline_class_interface}
- *
- */
-export const readline = createInterface({
-  input: stdin,
-  output: stdout,
-  prompt: `\nEnter Command: `,
-});

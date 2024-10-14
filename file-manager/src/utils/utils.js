@@ -1,6 +1,7 @@
+import path from 'node:path';
 import { stderr, stdout } from 'process';
 import { promises as fs } from 'fs';
-import { ERROR_NO_ENTITY_CODE, ERROR_TYPE, FILE_NOT_FOUND } from './constants.js';
+import { ERROR_NO_ENTITY_CODE, ERROR_TYPE } from './constants.js';
 
 /**
  * Converts a speed in MHz to GHz by dividing the value by 1000.
@@ -55,4 +56,16 @@ export const fileExists = async (filePath) => {
     }
     return false;
   }
+};
+
+/**
+ * Checks if the provided directory is valid and not above the root directory.
+ *
+ * @param {string} newDir - The directory to check.
+ * @returns {boolean} - Returns true if the directory is valid, false otherwise.
+ */
+export const isValidDirectory = (newDir) => {
+  const rootDir = path.parse(newDir).root;
+  const isAboveRoot = path.relative(rootDir, newDir).startsWith('..');
+  return !isAboveRoot;
 };
