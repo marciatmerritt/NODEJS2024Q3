@@ -23,7 +23,7 @@ import { logger } from '../utils/utils.js';
  *
  * @returns {void} - Logs the result or an error message to the console.
  */
-export const handleOSCommands = async (args) => {
+const handleOSCommands = async (args) => {
   try {
     switch (args[0]) {
       case '--EOL':
@@ -53,3 +53,5 @@ export const handleOSCommands = async (args) => {
     logger(`${OPERATION_FAILED}: ${error.message}`, ERROR_TYPE);
   }
 };
+
+export default handleOSCommands;

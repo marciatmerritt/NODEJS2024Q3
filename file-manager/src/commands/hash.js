@@ -8,11 +8,14 @@ import { fileExists, logger } from '../utils/utils.js';
 
 /**
  * Handles hash-related commands from the command line.
- * Expects at least one argument: the file path to be hashed.
- * @param {Array<string>} args - Command-line arguments.
- * @returns {Promise<void>} - Logs the hash calculation result or an error.
+ * This function validates the input arguments, checks if the specified file exists, and then calculates its hash.
+ * Logs appropriate messages depending on the success or failure of the operations.
+ *
+ * @param {Array<string>} args - Command-line arguments. The first argument should be the file path to be hashed.
+ * @returns {Promise<void>} - Logs the outcome of the operation. If the file exists and the hash is calculated, 
+ *                            a success message is logged. If there are any errors, the appropriate error message is logged.
  */
-export const handleHashCommands = async (args) => {
+const handleHashCommands = async (args) => {
   if (args.length < 1) {
     logger(`${INVALID_INPUT}: ${FILE_REQUIRED_MSG}`, ERROR_TYPE);
     return;
@@ -32,3 +35,5 @@ export const handleHashCommands = async (args) => {
     logger(`${OPERATION_FAILED}: ${HASH_ERROR} = ${error}`, ERROR_TYPE);
   }
 };
+
+export default handleHashCommands;

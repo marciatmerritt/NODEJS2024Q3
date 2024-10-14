@@ -1,66 +1,68 @@
-import { stdin, exit, cwd, stdout } from 'node:process';
-import { CTRL_C_TERMINATE, CURRENT_DIR_MSG, INVALID_COMMAND } from './utils/constants.js';
+import { exit } from 'node:process';
+import { CTRL_C_TERMINATE, CURRENT_DIR_MSG } from './utils/constants.js';
 import { getHomeDir } from './utils/osInfo.js';
 import { getCLIUsername, readline } from './utils/cli.js';
 import { logger } from './utils/utils.js';
-import { handleOSCommands } from './commands/os.js';
-import { handleHashCommands } from './commands/hash.js';
-import { handleCompressCommand, handleDecompressCommand } from './commands/zip.js';
+import handleCommands from './commands/commandHandler.js';
+import { handleExit } from './utils/exit.js';
 
-// get username from CLI argument passed on app start
-const username = getCLIUsername();
-const userHomeDir = await getHomeDir();
+/**
+ * File Manager application
+ *
+ * This asynchronous function handles the initialization and management of the CLI-based
+ * file manager, which includes:
+ * - Fetching the username passed via the command-line argument.
+ * - Displaying a welcome message along with the current directory.
+ * - Setting up event listeners for user input (`line` event), closing the program (`CTRL+C`), and
+ *   handling specific commands.
+ *
+ * Features:
+ * - Listens for the `.exit` command to terminate the application.
+ * - Pauses and resumes the `readline` interface for command handling.
+ * - Gracefully handles application termination via `handleExit`.
+ *
+ * Any errors during the startup are logged, and the process exits with a non-zero status code.
+ *
+ * @async
+ * @function fileManagerStart
+ * @throws Will log an error and exit with status code 1 if there's a failure during initialization.
+ */
+const fileManagerStart = async () => {
+  try {
+    // get username from CLI argument passed on app start
+    const username = getCLIUsername();
+    const userHomeDir = await getHomeDir();
 
-const welcomeMsg = `Welcome to the File Manager, ${username}!`;
-const exitMsg = `\nThank you for using File Manager, ${username}, goodbye!`;
+    const welcomeMsg = `Welcome to the File Manager, ${username}!`;
 
-console.log(welcomeMsg);
-console.log(CURRENT_DIR_MSG + userHomeDir);
+    logger(welcomeMsg);
+    logger(CURRENT_DIR_MSG + userHomeDir);
+    readline.prompt();
 
-readline.prompt();
+    readline.on(CTRL_C_TERMINATE, () => {
+      handleExit(username);
+    });
 
-readline.on(CTRL_C_TERMINATE, () => {
-    logger(exitMsg);
-    readline.close();
-});
+    readline.on('close', () => {
+      exit(0);
+    });
 
+    readline.on('line', async (input) => {
+      const trimmedInput = input.trim();
 
-readline.on('close', () => {
-    exit(0);
-});
-
-
-readline.on('line', async (input) => {
-    const trimmedInput = input.trim();
-
-    if (trimmedInput === '.exit') {
-        logger(exitMsg);
-        readline.close();
-    } else {
+      if (trimmedInput === '.exit') {
+        handleExit(username);
+      } else {
         readline.pause();
         await handleCommands(trimmedInput);
         readline.resume();
         readline.prompt();
-    }
-});
-
-const handleCommands = async (input) => {
-  const [command, ...args] = input.split(' ');
-
-  switch (command) {
-    case 'os':
-        await handleOSCommands(args);
-        break;
-    case 'hash':
-        await handleHashCommands(args);
-        break;
-    case 'compress':
-        await handleCompressCommand(args);
-        break;
-    case 'decompress':
-        await handleDecompressCommand(args);
-        break;
-    default:
-      logger(INVALID_COMMAND);
+      }
+    });
+  } catch (error) {
+    logger(`Error starting File Manager: ${error.message}`);
+    exit(1);
   }
 };
+
+fileManagerStart();
