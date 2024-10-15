@@ -6,7 +6,7 @@ import {
   PROMPT_FILE_PATH_NEW_NAME,
   PROMPT_FILE_TO_DELETE,
 } from '../utils/constants.js';
-import { handleReadFileCommand, handleCreateFileCommand } from '../utils/fsOperations.js';
+import { handleReadFileCommand, handleCreateFileCommand, handleRenameFileCommand } from '../utils/fsOperations.js';
 import { fileExists, logger } from '../utils/utils.js';
 /**
  * Handles various file operations (read, create, rename, copy, move, delete) based on the command.

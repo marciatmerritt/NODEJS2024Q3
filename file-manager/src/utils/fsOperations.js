@@ -1,10 +1,10 @@
 import { createReadStream, createWriteStream } from 'fs';
-import { logger } from '../utils/utils.js';
+import { fileExists, logger } from '../utils/utils.js';
 import { normalize } from 'node:path';
 import { join } from 'path';
 import { cwd, stdout } from 'process';
-import { ENCODING_UTF8, ERROR_CODE_FILE_EXISTS, ERROR_CODE_NO_ENTITY, ERROR_FILE_ALREADY_EXISTS, ERROR_OPERATION_FAILED, MESSAGE_TYPE_ERROR } from './constants.js';
-import { writeFile } from 'fs/promises';
+import { ENCODING_UTF8, ERROR_CODE_FILE_EXISTS, ERROR_CODE_NO_ENTITY, ERROR_FILE_ALREADY_EXISTS, ERROR_FILE_NOT_FOUND, ERROR_OPERATION_FAILED, MESSAGE_TYPE_ERROR } from './constants.js';
+import { rename, writeFile } from 'fs/promises';
 
 export const handleReadFileCommand = async (filepath) => {
     
@@ -55,14 +55,37 @@ export const handleCreateFileCommand = async (fileName) => {
   }
 };
 
-export const handleRenameFileCommand = (oldPath, newPath) => {
-  fs.rename(oldPath, newPath, (error) => {
-    if (error) logger(`Error renaming file: ${error.message}`);
-    else logger(`File renamed successfully to ${newPath}.`);
-  });
+export const handleRenameFileCommand = async (oldPath, newPath) => {
+
+  const oldFilePath = normalize(oldPath);
+  const doesOldFileExist = await fileExists(oldFilePath);
+  if (!doesOldFileExist) {
+    logger(
+      `${ERROR_OPERATION_FAILED}: Input ${ERROR_FILE_NOT_FOUND} at ${oldFilePath}`,
+      MESSAGE_TYPE_ERROR
+    );
+    return;
+  };
+
+  const newFilePath = normalize(newPath);
+  const doesNewFileExist = await fileExists(newFilePath);
+  if (doesNewFileExist) {
+    logger(
+      `${ERROR_OPERATION_FAILED}: Input ${ERROR_FILE_ALREADY_EXISTS} at ${oldFilePath}`,
+      MESSAGE_TYPE_ERROR
+    );
+    return;
+  };
+
+  try {
+    await rename(oldFilePath, newFilePath);
+    logger(`File renamed successfully to ${newFilePath}.`);
+  } catch (error) {
+    logger(`${ERROR_OPERATION_FAILED}: - Unexpected error: , ${error}`, MESSAGE_TYPE_ERROR);
+  }
 };
 
-export const handleCopyFileCommand = (source, destination) => {
+export const handleCopyFileCommand = async (source, destination) => {
   const readableStream = fs.createReadStream(source);
   const writableStream = fs.createWriteStream(destination);
 
@@ -73,7 +96,7 @@ export const handleCopyFileCommand = (source, destination) => {
   });
 };
 
-export const handleMoveFileCommand = (source, destination) => {
+export const handleMoveFileCommand = async (source, destination) => {
   handleCopyFileCommand(source, destination);
   fs.unlink(source, (error) => {
     if (error) logger(`Error deleting file after move: ${error.message}`);
@@ -81,7 +104,7 @@ export const handleMoveFileCommand = (source, destination) => {
   });
 };
 
-export const handleDeleteFileCommand = (filePath) => {
+export const handleDeleteFileCommand = async (filePath) => {
   fs.unlink(filePath, (error) => {
     if (error) logger(`Error deleting file: ${error.message}`);
     else logger(`File ${filePath} deleted successfully.`);
