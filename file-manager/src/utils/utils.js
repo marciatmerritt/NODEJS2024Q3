@@ -1,7 +1,7 @@
 import { parse, relative } from 'node:path';
 import { stderr, stdout } from 'process';
 import { promises as fs } from 'fs';
-import { ERROR_CODE_NO_ENTITY, ERROR_OPERATION_FAILED, MESSAGE_TYPE_ERROR } from './constants.js';
+import { ERROR_CODE_NO_ENTITY, ERROR_FILE_ALREADY_EXISTS, ERROR_FILE_NOT_FOUND, ERROR_OPERATION_FAILED, MESSAGE_TYPE_ERROR } from './constants.js';
 
 /**
  * Converts a speed in MHz to GHz by dividing the value by 1000.
@@ -77,4 +77,31 @@ export const isValidDirectory = (newDir) => {
   const rootDir = parse(newDir).root;
   const isAboveRoot = relative(rootDir, newDir).startsWith('..');
   return !isAboveRoot;
+};
+
+/**
+ * Utility function for logging errors.
+ *
+ * @param {string} message - The error message to log.
+ * @param {Error} error - The error object.
+ */
+export const logError = (message, error) => {
+  logger(`${ERROR_OPERATION_FAILED} - ${message}: ${error.message || error}`, MESSAGE_TYPE_ERROR);
+};
+
+/**
+ * Utility function for checking file existence.
+ *
+ * @param {string} filePath - Path to the file.
+ * @param {boolean} [shouldExist=true] - Whether the file should exist.
+ * @throws Will throw an error if the file existence does not match the expectation.
+ */
+export const checkFileExistence = async (filePath, shouldExist = true) => {
+  const exists = await fileExists(filePath);
+  if (shouldExist && !exists) {
+    throw new Error(`${ERROR_FILE_NOT_FOUND} at ${filePath}`);
+  }
+  if (!shouldExist && exists) {
+    throw new Error(`${ERROR_FILE_ALREADY_EXISTS} at ${filePath}`);
+  }
 };
