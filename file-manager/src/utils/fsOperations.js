@@ -4,6 +4,7 @@ import { normalize } from 'node:path';
 import { join } from 'path';
 import { cwd, stdout } from 'process';
 import { ENCODING_UTF8, ERROR_CODE_FILE_EXISTS, ERROR_CODE_NO_ENTITY, ERROR_FILE_ALREADY_EXISTS, ERROR_OPERATION_FAILED, MESSAGE_TYPE_ERROR } from './constants.js';
+import { writeFile } from 'fs/promises';
 
 export const handleReadFileCommand = async (filepath) => {
     
@@ -41,7 +42,8 @@ export const handleCreateFileCommand = async (fileName) => {
   const filePath = join(cwd(), fileName);
 
   try {
-    await fs.writeFile(filePath, fileContent, { flag: 'wx' });
+    await writeFile(filePath, fileContent, { flag: 'wx' });
+    logger(`File created successfully: ${filePath}`);
   } catch (error) {
     if (error.code === ERROR_CODE_FILE_EXISTS) {
         logger(
