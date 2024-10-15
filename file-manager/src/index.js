@@ -49,10 +49,6 @@ const fileManager = async () => {
       handleExit(username);
     });
 
-    readline.on('close', () => {
-      exit(0);
-    });
-
     readline.on('line', async (input) => {
       const trimmedInput = input.trim();
 
@@ -60,9 +56,12 @@ const fileManager = async () => {
         handleExit(username);
       } else {
         readline.pause();
-        await handleCommands(trimmedInput, readline);
-        readline.resume();
-        updatePrompt();
+        await handleCommands(trimmedInput);
+        
+        setTimeout(() => {
+            readline.resume();
+            updatePrompt();
+          }, 500);  
       }
     });
   } catch (error) {

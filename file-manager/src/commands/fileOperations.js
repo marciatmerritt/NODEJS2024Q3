@@ -17,11 +17,11 @@ import { fileExists, logger } from '../utils/utils.js';
  * @param {Array<string>} args - The arguments for the command (file paths, new names, etc.).
  * @returns {Promise<void>} - Logs the result of the file operation or an error.
  */
-const handleFileOperation = async (command, args, readline) => {
+const handleFileOperation = async (command, args) => {
     switch (command) {
       case 'cat':
         if (args.length > 0) {
-          await handleReadFileCommand(args[0], readline);
+          await handleReadFileCommand(args[0]);
         } else {
             logger(`${ERROR_INVALID_INPUT}: ${PROMPT_FILE_REQUIRED}`, MESSAGE_TYPE_PROMPT);
         }

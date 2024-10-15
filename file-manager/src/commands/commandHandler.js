@@ -56,7 +56,7 @@ const handleCommands = async (input, readline) => {
         }
         break;
       default:
-        await handleFileOperation(command, args, readline);
+        await handleFileOperation(command, args);
         break;
     }
   } catch (error) {

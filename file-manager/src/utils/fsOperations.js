@@ -5,25 +5,27 @@ import { join } from 'path';
 import { cwd, stdout } from 'process';
 import { ENCODING_UTF8, ERROR_CODE_FILE_EXISTS, ERROR_CODE_NO_ENTITY, ERROR_FILE_ALREADY_EXISTS, ERROR_OPERATION_FAILED, MESSAGE_TYPE_ERROR } from './constants.js';
 
-export const handleReadFileCommand = async (filepath, readline) => {
+export const handleReadFileCommand = async (filepath) => {
     
   const inputFilepath = normalize(filepath);
   try {
     const readableStream = createReadStream(inputFilepath, ENCODING_UTF8);
 
-    readline.pause();    
+    readableStream.on('open', () => {
+        logger('\r');
+      });
 
     readableStream.on(('data'), (chunk) => {
         stdout.write(chunk);
       });
 
     readableStream.on(('end'), () => {
-        readline.resume();
+        logger('\n\nFinished reading file.');
     });
 
     readableStream.on('error', (error) => {
         if (error.code === ERROR_CODE_NO_ENTITY) {
-          logger(`${ERROR_OPERATION_FAILED}: ${filepath} does not exist.`);
+          logger(`${ERROR_OPERATION_FAILED}: ${filepath} does not exist.`, MESSAGE_TYPE_ERROR);
         } else {
           logger(`${ERROR_OPERATION_FAILED} - Unexpected error: ${error}`, MESSAGE_TYPE_ERROR);
         }

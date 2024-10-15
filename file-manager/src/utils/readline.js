@@ -20,6 +20,9 @@ export const readline = createInterface({
  * @function updatePrompt
  */
 export const updatePrompt = () => {
-    readline.setPrompt(`${MESSAGE_CURRENT_DIR} ${cwd()} \n\nEnter Command: `);
-    readline.prompt();
+    readline.setPrompt(`\n${MESSAGE_CURRENT_DIR} ${cwd()} \n\nEnter Command: `);
+    setTimeout(() => {
+      readline.prompt();
+    }, 50);
+    
   };
