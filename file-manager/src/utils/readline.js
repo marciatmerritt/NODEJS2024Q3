@@ -1,6 +1,6 @@
 import { createInterface } from 'readline';
 import { stdin, stdout, cwd } from 'process';
-import { CURRENT_DIR_MSG } from './constants.js';
+import { MESSAGE_CURRENT_DIR } from './constants.js';
 
 /**
  * The readline interface is set up to use the stdin and stdout streams
@@ -15,13 +15,11 @@ export const readline = createInterface({
 });
 
 /**
- * Function to update the prompt based on the current working directory.
- * This will dynamically display the prompt with the current directory in the format: 
- * "Enter Command: C:\current\directory"
- *
+ * Updates the command line prompt to dynamically display the current working directory.
+ * 
  * @function updatePrompt
  */
 export const updatePrompt = () => {
-    readline.setPrompt(`${CURRENT_DIR_MSG} ${cwd()} \n\nEnter Command: `);
-    readline.prompt(); // Immediately prompt the user for input after updating
+    readline.setPrompt(`${MESSAGE_CURRENT_DIR} ${cwd()} \n\nEnter Command: `);
+    readline.prompt();
   };

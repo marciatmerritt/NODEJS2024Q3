@@ -1,5 +1,5 @@
 import { exit, chdir } from 'node:process';
-import { CTRL_C_TERMINATE, INVALID_DIRECTORY } from './utils/constants.js';
+import { SIGNAL_CTRL_C, ERROR_INVALID_DIRECTORY, MESSAGE_TYPE_ERROR } from './utils/constants.js';
 import { getHomeDir } from './utils/osInfo.js';
 import { getCLIUsername } from './utils/cli.js';
 import { isValidDirectory, logger } from './utils/utils.js';
@@ -38,14 +38,14 @@ const fileManager = async () => {
         if (isValidDirectory(userHomeDir)) {
             chdir(userHomeDir);
           } else {
-            logger(INVALID_DIRECTORY);
+            logger(ERROR_INVALID_DIRECTORY, MESSAGE_TYPE_ERROR);
             chdir(userHomeDir);
           }
 
     logger(`Welcome to the File Manager, ${username}!`);
     updatePrompt();
 
-    readline.on(CTRL_C_TERMINATE, () => {
+    readline.on(SIGNAL_CTRL_C, () => {
       handleExit(username);
     });
 
@@ -60,13 +60,13 @@ const fileManager = async () => {
         handleExit(username);
       } else {
         readline.pause();
-        await handleCommands(trimmedInput);
+        await handleCommands(trimmedInput, readline);
         readline.resume();
         updatePrompt();
       }
     });
   } catch (error) {
-    logger(`Error starting File Manager: ${error.message}`);
+    logger(`Error starting File Manager: ${error.message}`, MESSAGE_TYPE_ERROR);
     exit(1);
   }
 };

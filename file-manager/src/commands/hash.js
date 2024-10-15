@@ -1,8 +1,9 @@
 import { normalize } from 'node:path';
 import { calculateHash } from '../utils/calcHash.js';
 import {
-  FILE_REQUIRED_MSG, INVALID_INPUT,
-  OPERATION_FAILED, HASH_ERROR, ERROR_TYPE,
+  PROMPT_FILE_REQUIRED, ERROR_INVALID_INPUT, MESSAGE_TYPE_PROMPT,
+  ERROR_OPERATION_FAILED, ERROR_HASH_CALCULATION, MESSAGE_TYPE_ERROR,
+  ERROR_FILE_NOT_FOUND,
 } from '../utils/constants.js';
 import { fileExists, logger } from '../utils/utils.js';
 
@@ -17,7 +18,7 @@ import { fileExists, logger } from '../utils/utils.js';
  */
 const handleHashCommands = async (args) => {
   if (args.length < 1) {
-    logger(`${INVALID_INPUT}: ${FILE_REQUIRED_MSG}`, ERROR_TYPE);
+    logger(`${ERROR_INVALID_INPUT}: ${PROMPT_FILE_REQUIRED}`, MESSAGE_TYPE_PROMPT);
     return;
   };
 
@@ -25,14 +26,14 @@ const handleHashCommands = async (args) => {
 
   const doesFileExist = await fileExists(filepath);
   if (!doesFileExist) {
-    logger(`${OPERATION_FAILED}: ${FILE_NOT_FOUND} at ${filepath}`, ERROR_TYPE);
+    logger(`${ERROR_OPERATION_FAILED}: ${ERROR_FILE_NOT_FOUND} at ${filepath}`, MESSAGE_TYPE_ERROR);
     return;
   }
 
   try {
     await calculateHash(filepath);
   } catch (error) {
-    logger(`${OPERATION_FAILED}: ${HASH_ERROR} = ${error}`, ERROR_TYPE);
+    logger(`${ERROR_OPERATION_FAILED}: ${ERROR_HASH_CALCULATION} = ${error}`, MESSAGE_TYPE_ERROR);
   }
 };
 

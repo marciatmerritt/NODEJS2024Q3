@@ -2,7 +2,7 @@ import fs from 'fs';
 import { dirname, isAbsolute, join } from 'path';
 import { logger } from '../utils/utils.js'; // Assuming you have a logger utility
 import { chdir, cwd } from 'process';
-import { ERROR_TYPE } from '../utils/constants.js';
+import { MESSAGE_TYPE_ERROR } from '../utils/constants.js';
 
 /**
  * Function to change the working directory to the parent (up one level).
@@ -50,7 +50,7 @@ export const handleLsCommand = async () => {
       fs.readdir(currentDir, { withFileTypes: true }, (error, files) => {
         if (error) {
           reject(
-            new Error('Error reading directory: ' + error.message, ERROR_TYPE),
+            new Error('Error reading directory: ' + error.message, MESSAGE_TYPE_ERROR),
           );
         } else {
           resolve(files);
@@ -86,6 +86,6 @@ export const handleLsCommand = async () => {
       logger(`${index + 1}     | ${file.padEnd(15)} | ${type}`);
     });
   } catch (error) {
-    logger(`${error.message}, ERROR`, ERROR_TYPE);
+    logger(`${error.message}, ERROR`, MESSAGE_TYPE_ERROR);
   }
 };

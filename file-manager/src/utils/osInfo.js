@@ -1,8 +1,8 @@
 import { EOL, arch, cpus, homedir, userInfo } from 'node:os';
 import { convertMHzToGHz } from './utils.js';
 import {
-  CPU_ARCH_ERROR, CPU_ERROR, EOL_ERROR,
-  HOME_DIR_ERROR, SYS_USERNAME_ERROR,
+  ERROR_CPU_ARCH_FETCH, ERROR_CPU_FETCH, ERROR_EOL_FETCH,
+  ERROR_HOME_DIR_FETCH, ERROR_SYS_USERNAME_FETCH,
 } from './constants.js';
 
 /**
@@ -13,7 +13,7 @@ export const getEOL = async () => {
   try {
     return Promise.resolve(EOL);
   } catch (error) {
-    throw new Error(`${EOL_ERROR}: ${error.message}`);
+    throw new Error(`${ERROR_EOL_FETCH}: ${error.message}`);
   }
 };
 
@@ -33,7 +33,7 @@ export const getCPUs = async () => {
   try {
     return Promise.resolve({ numCPUs, cpuDetails });
   } catch (error) {
-    throw new Error(`${CPU_ERROR}: ${error.message}`);
+    throw new Error(`${ERROR_CPU_FETCH}: ${error.message}`);
   }
 };
 
@@ -45,7 +45,7 @@ export const getHomeDir = async () => {
   try {
     return Promise.resolve(homedir());
   } catch (error) {
-    throw new Error(`${HOME_DIR_ERROR}: ${error.message}`);
+    throw new Error(`${ERROR_HOME_DIR_FETCH}: ${error.message}`);
   }
 };
 
@@ -57,7 +57,7 @@ export const getSystemUserName = async () => {
   try {
     return Promise.resolve(userInfo().username);
   } catch (error) {
-    throw new Error(`${SYS_USERNAME_ERROR}: ${error.message}`);
+    throw new Error(`${ERROR_SYS_USERNAME_FETCH}: ${error.message}`);
   }
 };
 
@@ -69,6 +69,6 @@ export const getCPUArchitecture = async () => {
   try {
     return Promise.resolve(arch());
   } catch (error) {
-    throw new Error(`${CPU_ARCH_ERROR}: ${error.message}`);
+    throw new Error(`${ERROR_CPU_ARCH_FETCH}: ${error.message}`);
   }
 };

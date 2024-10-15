@@ -2,7 +2,7 @@ import { createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { normalize } from 'node:path';
 import { fileExists, logger } from './utils.js';
-import { FILE_NOT_FOUND, HASH_ERROR, OPERATION_FAILED } from './constants.js';
+import { ENCODING_HEX, ERROR_FILE_NOT_FOUND, ERROR_HASH_CALCULATION, ERROR_OPERATION_FAILED, MESSAGE_TYPE_ERROR } from './constants.js';
 
 /**
  * Asynchronously calculates the hash of a file.
@@ -14,7 +14,7 @@ import { FILE_NOT_FOUND, HASH_ERROR, OPERATION_FAILED } from './constants.js';
 export const calculateHash = async (
   filepath,
   algorithm = 'sha256',
-  encoding = 'hex',
+  encoding = ENCODING_HEX,
 ) => {
   try {
     const hashMsg = `${algorithm} hash: `;
@@ -22,8 +22,9 @@ export const calculateHash = async (
 
     const doesFileExist = await fileExists(normalizedFilePath);
     if (!doesFileExist) {
-      throw new Error(`${OPERATION_FAILED}: ${FILE_NOT_FOUND}`);
-    }
+      logger(`${ERROR_OPERATION_FAILED}: ${ERROR_FILE_NOT_FOUND}`, MESSAGE_TYPE_ERROR);
+      return;
+    };
 
     const hash = createHash(algorithm);
     const input = createReadStream(normalizedFilePath);
@@ -31,9 +32,9 @@ export const calculateHash = async (
     // Loop through the file content in chunks and update the hash with each chunk
     for await (const chunk of input) {
       hash.update(chunk);
-    }
+    };
     logger(hashMsg + hash.digest(encoding));
   } catch (error) {
-    console.error(`${OPERATION_FAILED}: ${HASH_ERROR} = ${error}`);
-  }
+    logger(`${ERROR_OPERATION_FAILED}: ${ERROR_HASH_CALCULATION} = ${error}`, MESSAGE_TYPE_ERROR);
+  };
 };
