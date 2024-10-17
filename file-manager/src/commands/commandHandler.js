@@ -3,15 +3,15 @@ import handleHashCommands from './hash.js';
 import handleZipOperations from './zip.js';
 import { logger } from '../utils/utils.js';
 import {
-  handleCdCommand,
-  handleLsCommand,
-  handleUpCommand,
+  handleCdCommand, handleLsCommand, handleUpCommand,
 } from './navigation.js';
 import handleFileOperation from './fileOperations.js';
 
 /**
- * This asynchronous function takes a user input string, splits it into the command and its arguments,
- * and then routes the command to the appropriate handler. Supported commands include:
+ * @async
+ * @description
+ *  This asynchronous function takes a user input string, splits it into the command and its arguments,
+ *  and then routes the command to the appropriate handler. Supported commands include:
  *
  * - `os`: Handles operating system-related commands.
  * - `hash`: Handles hashing-related commands.
@@ -19,8 +19,6 @@ import handleFileOperation from './fileOperations.js';
  * - `decompress`: Decompresses files.
  *
  * If the command is unrecognized, an error message is logged.
- *
- * @async
  * @function handleCommands
  * @param {string} input - The command string entered by the user.
  * @returns {Promise<void>} - The function does not return a value but performs the necessary actions based on the command.
